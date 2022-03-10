@@ -2,4 +2,5 @@ venv
 .env
 Dataset.zip
 Dataset/*
+"vpp_models/.recommendation engine.vpp.lck"
 
