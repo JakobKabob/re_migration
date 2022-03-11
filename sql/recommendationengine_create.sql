@@ -76,8 +76,8 @@ CREATE TABLE bought_product (
   product_id, 
   _id));
 CREATE TABLE buid (
-  visitors_id char(255) NOT NULL, 
-  buid        char(255) NOT NULL, 
+  visitor_id char(255) NOT NULL, 
+  buid       char(255) NOT NULL, 
   PRIMARY KEY (buid));
 CREATE TABLE previously_recommended (
   product_id char(255), 
@@ -85,7 +85,7 @@ CREATE TABLE previously_recommended (
 ALTER TABLE price ADD CONSTRAINT FKprice565483 FOREIGN KEY (product_id) REFERENCES product (_id);
 ALTER TABLE properties ADD CONSTRAINT FKproperties819154 FOREIGN KEY (products_id) REFERENCES product (_id);
 ALTER TABLE bought_product ADD CONSTRAINT FKbought_pro143486 FOREIGN KEY (session_id) REFERENCES "session" (_id);
-ALTER TABLE buid ADD CONSTRAINT FKbuid546062 FOREIGN KEY (visitors_id) REFERENCES visitor (_id);
+ALTER TABLE buid ADD CONSTRAINT FKbuid710512 FOREIGN KEY (visitor_id) REFERENCES visitor (_id);
 ALTER TABLE "session" ADD CONSTRAINT FKsession95722 FOREIGN KEY (buid) REFERENCES buid (buid);
 ALTER TABLE bought_product ADD CONSTRAINT FKbought_pro165373 FOREIGN KEY (product_id) REFERENCES product (_id);
 ALTER TABLE previously_recommended ADD CONSTRAINT FKpreviously550564 FOREIGN KEY (visitor_id) REFERENCES visitor (_id);

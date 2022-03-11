@@ -142,17 +142,18 @@ def visitor(row, curr):
             buid
         ) VALUES (%s, %s)
         '''
-    for buid in row['buids']:
-        try:
-            curr.execute(sql % (
-                    format_str(str(row['_id'])),
-                    format_str(buid)
-                    ))
-        except Exception as err:
-            pprint(row)
-            print(err)
-            raise err
-            exit()
+    if 'buid' in row:
+        for buid in row['buids']:
+            try:
+                curr.execute(sql % (
+                        format_str(str(row['_id'])),
+                        format_str(buid)
+                        ))
+            except Exception as err:
+                pprint(row)
+                print(err)
+                raise err
+                exit()
 
 
 def session(row, curr):
