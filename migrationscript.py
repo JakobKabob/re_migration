@@ -61,8 +61,15 @@ def product(row, curr):
             _id,
             deeplink,
             name,
-            recommendable
-        ) VALUES (%s, %s, %s, %s)
+            recommendable,
+            brand,
+            category,
+            gender,
+            herhaalaankopen,
+            sub_category,
+            sub_sub_category,
+            sub_sub_sub_category
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s)
         '''
 
     curr.execute(sql % (
@@ -70,8 +77,15 @@ def product(row, curr):
             format_str(row['deeplink']), 
             format_str(row['name']), 
             row['recommendable'] if 'recommendable' in row else 'NULL',
+            format_str(row['brand']) if 'brand' in row and row['brand'] is not None else 'NULL',
+            format_str(row['category']) if 'category' in row and row['category'] is not None else 'NULL',
+            format_str(row['gender']) if 'gender' in row and row['gender'] is not None else 'NULL',
+            row['herhaalaankopen'] if 'herhaalaankopen' in row and row['herhaalaankopen'] is not None else 'NULL',
+            format_str(row['sub_category']) if 'sub_category' in row and row['sub_category'] is not None else 'NULL',
+            format_str(row['sub_sub_category']) if 'sub_sub_category' in row and row['sub_sub_category'] is not None else 'NULL',
+            format_str(row['sub_sub_sub_category']) if 'sub_sub_sub_category' in row and row['sub_sub_sub_category'] is not None else 'NULL',
         )
-    ) 
+    )
 
     # price table
     sql = '''
@@ -86,6 +100,82 @@ def product(row, curr):
             format_str(row['_id']),
             row['price']['mrsp'],
             row['price']['selling_price']
+        )
+    )
+
+    # properties table
+    placeholders = ','.join(['%s' for _ in range(31)])
+    sql = f'''
+        INSERT INTO properties(
+            products_id,
+            availability,
+            bundel_sku,
+            discount,
+            doelgroep,
+            eenheid,
+            factor,
+            folder_actief,
+            gebruik,
+            geschiktvoor,
+            geursoort,
+            huidconditie,
+            huidtype,
+            huidtypegezicht,
+            inhoud,
+            klacht,
+            kleur,
+            leeftijd,
+            mid,
+            serie,
+            soort,
+            soorthaarverzorging,
+            soortmondverzorging,
+            sterkte,
+            stock,
+            type,
+            typehaarkleuring,
+            typetandenborstel,
+            variant,
+            waterproof,
+            weekdeal
+        ) VALUES ({placeholders})
+        '''
+
+    def insertion_wrapper(key, row):
+        return row['properties'][key] if key in row and row['properties'][key] is not None else 'NULL'
+
+    curr.execute(sql % (
+            format_str(row['_id']),
+            insertion_wrapper('availability', row),
+            insertion_wrapper('bundel_sku', row),
+            format_str(insertion_wrapper('discount', row)),
+            format_str(insertion_wrapper('doelgroep', row)),
+            insertion_wrapper('eenheid', row),
+            insertion_wrapper('factor', row),
+            format_str(insertion_wrapper('folder_actief', row)),
+            format_str(insertion_wrapper('gebruik', row)),
+            format_str(insertion_wrapper('geschiktvoor', row)),
+            format_str(insertion_wrapper('geursoort', row)),
+            format_str(insertion_wrapper('huidconditie', row)),
+            format_str(insertion_wrapper('huidtype', row)),
+            format_str(insertion_wrapper('huidtypegezicht', row)),
+            format_str(insertion_wrapper('inhoud', row)),
+            format_str(insertion_wrapper('klacht', row)),
+            format_str(insertion_wrapper('kleur', row)),
+            insertion_wrapper('leeftijd', row),
+            insertion_wrapper('mid', row),
+            format_str(insertion_wrapper('serie', row)),
+            format_str(insertion_wrapper('soort', row)),
+            format_str(insertion_wrapper('soorthaarverzorging', row)),
+            format_str(insertion_wrapper('soortmondverzorging', row)),
+            format_str(insertion_wrapper('sterkte', row)),
+            insertion_wrapper('stock', row),
+            format_str(insertion_wrapper('type', row)),
+            format_str(insertion_wrapper('typehaarkleuring', row)),
+            format_str(insertion_wrapper('typetandenborstel', row)),
+            format_str(insertion_wrapper('variant', row)),
+            insertion_wrapper('waterproof', row),
+            insertion_wrapper('weekdeal', row),
         )
     )
 
@@ -122,18 +212,18 @@ def visitor(row, curr):
             product_id
         ) VALUES (%s, %s)
         '''
-    if 'previously_recommended' in row:
-        for p_id in row['previously_recommended']:
-            try:
-                curr.execute(sql % (
-                        format_str(str(row['_id'])),
-                        format_str(p_id)
-                        ))
-            except Exception as err:
-                pprint(row)
-                print(err)
-                raise err
-                exit()
+    #if 'previously_recommended' in row:
+    #    for p_id in row['previously_recommended']:
+    #        try:
+    #            curr.execute(sql % (
+    #                    format_str(str(row['_id'])),
+    #                    format_str(p_id)
+    #                    ))
+    #        except Exception as err:
+    #            pprint(row)
+    #            print(err)
+    #            raise err
+    #            exit()
 
     #buids 
     sql = '''
@@ -223,7 +313,7 @@ if __name__ == '__main__':
 
     drop_tables(pg_conn)
     create_tables(pg_conn)
-    #migrate(product, pg_conn, mg_conn.products.find())
-    migrate(visitor, pg_conn, mg_conn.visitors.find())
+    migrate(product, pg_conn, mg_conn.products.find())
+    #migrate(visitor, pg_conn, mg_conn.visitors.find())
     #migrate(session, pg_conn, mg_conn.sessions.find())
 

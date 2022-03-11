@@ -21,9 +21,9 @@ CREATE TABLE product (
   herhaalaankopen      bool, 
   name                 char(255) NOT NULL, 
   recommendable        bool, 
-  sub_category         char(32), 
-  sub_sub_category     char(32), 
-  sub_sub_sub_category char(32), 
+  sub_category         char(255), 
+  sub_sub_category     char(255), 
+  sub_sub_sub_category char(255), 
   image_url            char(255), 
   PRIMARY KEY (_id));
 CREATE TABLE price (
@@ -34,7 +34,7 @@ CREATE TABLE price (
   PRIMARY KEY (product_id));
 CREATE TABLE properties (
   products_id         char(255) NOT NULL, 
-  availability        int4 NOT NULL, 
+  availability        int4, 
   bundel_sku          int8, 
   discount            char(32), 
   doelgroep           char(32), 
@@ -51,22 +51,19 @@ CREATE TABLE properties (
   klacht              char(64), 
   kleur               char(32), 
   leeftijd            int4, 
-  mid                 int8 NOT NULL, 
+  mid                 int8, 
   serie               char(32), 
   soort               char(32), 
   soorthaarverzorging char(32), 
   soortmondverzorging char(32), 
   sterkte             char(32), 
-  stock               int8 NOT NULL, 
-  tax                 char(32) NOT NULL, 
+  stock               int8, 
   type                char(32), 
   typehaarkleuring    char(32), 
   typetandenborstel   char(32), 
   variant             char(32), 
   waterproof          bool, 
   weekdeal            bool, 
-  weekdeal_from       timestamp, 
-  weekdeal_to         timestamp, 
   PRIMARY KEY (products_id));
 CREATE TABLE bought_product (
   session_id char(255) NOT NULL, 
