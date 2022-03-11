@@ -1,36 +1,37 @@
-CREATE TABLE visitors (
-  );
-CREATE TABLE sessions (
-  );
-CREATE TABLE products (
-  _id                       char(255) NOT NULL, 
-  brand                     char(255), 
-  category                  char(255), 
-  color                     char(255), 
-  deeplink                  char(255) NOT NULL, 
-  description               char(255), 
-  fast_mover                bool, 
-  flavor                    char(255), 
-  gender                    char(255), 
-  herhaalaankopen           bool, 
-  name                      char(255) NOT NULL, 
-  predict_out_of_stock_date char(255), 
-  recommendable             bool NOT NULL, 
-  "size"                    char(32), 
-  sub_category              char(32), 
-  sub_sub_category          char(32), 
-  sub_sub_sub_category      char(32), 
+CREATE TABLE visitor (
+  _id             char(255) NOT NULL, 
+  latest_activity timestamp, 
+  origin          char(255), 
+  order_count     int4, 
+  PRIMARY KEY (_id));
+CREATE TABLE "session" (
+  _id           char(255) NOT NULL, 
+  session_start timestamp, 
+  session_end   timestamp, 
+  has_sale      bool, 
+  buid          char(255), 
+  PRIMARY KEY (_id));
+CREATE TABLE product (
+  _id                  char(255) NOT NULL, 
+  brand                char(255), 
+  category             char(255), 
+  deeplink             char(255) NOT NULL, 
+  description          char(255), 
+  gender               char(255), 
+  herhaalaankopen      bool, 
+  name                 char(255) NOT NULL, 
+  recommendable        bool, 
+  sub_category         char(32), 
+  sub_sub_category     char(32), 
+  sub_sub_sub_category char(32), 
+  image_url            char(255), 
   PRIMARY KEY (_id));
 CREATE TABLE price (
-  products_id   char(255) NOT NULL, 
+  product_id    char(255) NOT NULL, 
   discount      int4, 
   mrsp          int4 NOT NULL, 
-  selling_price int4 NOT NULL);
-CREATE TABLE images (
-  products_id char(255) NOT NULL, 
-  "Index"     SERIAL NOT NULL, 
-  url         char(255), 
-  PRIMARY KEY ("Index"));
+  selling_price int4 NOT NULL, 
+  PRIMARY KEY (product_id));
 CREATE TABLE properties (
   products_id         char(255) NOT NULL, 
   availability        int4 NOT NULL, 
@@ -51,7 +52,6 @@ CREATE TABLE properties (
   kleur               char(32), 
   leeftijd            int4, 
   mid                 int8 NOT NULL, 
-  online_only         bool, 
   serie               char(32), 
   soort               char(32), 
   soorthaarverzorging char(32), 
@@ -66,19 +66,26 @@ CREATE TABLE properties (
   waterproof          bool, 
   weekdeal            bool, 
   weekdeal_from       timestamp, 
-  weekdeal_to         timestamp);
-CREATE TABLE sm (
-  products_id  char(255) NOT NULL, 
-  is_active    bool NOT NULL, 
-  last_updated timestamp NOT NULL, 
-  type         char(32));
-CREATE TABLE stock (
-  products_id char(255) NOT NULL, 
-  "date"      timestamp NOT NULL, 
-  stock_level int8 NOT NULL, 
+  weekdeal_to         timestamp, 
   PRIMARY KEY (products_id));
-ALTER TABLE images ADD CONSTRAINT FKimages333331 FOREIGN KEY (products_id) REFERENCES products (_id);
-ALTER TABLE stock ADD CONSTRAINT FKstock355840 FOREIGN KEY (products_id) REFERENCES products (_id);
-ALTER TABLE price ADD CONSTRAINT FKprice519920 FOREIGN KEY (products_id) REFERENCES products (_id);
-ALTER TABLE properties ADD CONSTRAINT FKproperties531217 FOREIGN KEY (products_id) REFERENCES products (_id);
-ALTER TABLE sm ADD CONSTRAINT FKsm588886 FOREIGN KEY (products_id) REFERENCES products (_id);
+CREATE TABLE bought_product (
+  session_id char(255) NOT NULL, 
+  product_id char(255) NOT NULL, 
+  _id        int4 NOT NULL, 
+  PRIMARY KEY (session_id, 
+  product_id, 
+  _id));
+CREATE TABLE buid (
+  visitors_id char(255) NOT NULL, 
+  buid        char(255) NOT NULL, 
+  PRIMARY KEY (buid));
+CREATE TABLE previously_recommended (
+  product_id char(255), 
+  visitor_id char(255) NOT NULL);
+ALTER TABLE price ADD CONSTRAINT FKprice565483 FOREIGN KEY (product_id) REFERENCES product (_id);
+ALTER TABLE properties ADD CONSTRAINT FKproperties819154 FOREIGN KEY (products_id) REFERENCES product (_id);
+ALTER TABLE bought_product ADD CONSTRAINT FKbought_pro143486 FOREIGN KEY (session_id) REFERENCES "session" (_id);
+ALTER TABLE buid ADD CONSTRAINT FKbuid546062 FOREIGN KEY (visitors_id) REFERENCES visitor (_id);
+ALTER TABLE "session" ADD CONSTRAINT FKsession95722 FOREIGN KEY (buid) REFERENCES buid (buid);
+ALTER TABLE bought_product ADD CONSTRAINT FKbought_pro165373 FOREIGN KEY (product_id) REFERENCES product (_id);
+ALTER TABLE previously_recommended ADD CONSTRAINT FKpreviously550564 FOREIGN KEY (visitor_id) REFERENCES visitor (_id);
